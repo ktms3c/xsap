@@ -39,8 +39,35 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # TODO: needs confirmation — android-actions/setup-android@v3's
+      # default behavior tries to install the legacy 'tools' SDK package,
+      # which Google removed from its repository years ago; sdkmanager then
+      # exits 1 and the whole job fails before anything Gradle-related even
+      # runs. GitHub's ubuntu-latest runner image already ships a recent
+      # Android SDK (cmdline-tools, platform-tools, several platforms and
+      # build-tools versions preinstalled, ANDROID_HOME/ANDROID_SDK_ROOT
+      # already set), so the fix is to drop that action entirely and only
+      # ask sdkmanager for the exact extra packages this project needs,
+      # skipping the broken legacy 'tools' meta-package.
+      - name: Ensure required SDK packages are installed
+        run: |
+          set -e
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          # TODO(verify-version): the cmdline-tools version folder name
+          # (e.g. "16.0") is not guaranteed stable across runner image
+          # updates — found via `which`/PATH first, with a glob fallback,
+          # rather than a hardcoded "latest" or version number.
+          if command -v sdkmanager >/dev/null 2>&1; then
+            SDKMANAGER="$(command -v sdkmanager)"
+          else
+            SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 2 -name sdkmanager -type f | sort -V | tail -n1)"
+          fi
+          echo "Using sdkmanager at: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
 
       # TODO(verify-version): pin to a current stable Gradle release
       # compatible with the AGP version in gradle/libs.versions.toml (AGP
