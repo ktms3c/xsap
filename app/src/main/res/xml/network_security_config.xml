@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        TODO: needs confirmation — §4.1 allows both http and https targets (and local labs are
+        usually plain http), so cleartext is permitted at the platform level. The scope decision
+        (which hosts may actually be contacted) is made only in UrlValidator / PrivateIpGuard /
+        UrlFilter, never here. Tighten this if only https targets should be supported.
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

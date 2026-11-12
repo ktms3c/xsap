@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <CheckBox
+            android:id="@+id/checkJsLinkFinder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_enable_js_link_finder"
+            android:textColor="@color/text_primary" />
+
+        <CheckBox
+            android:id="@+id/checkCrawlSitemap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_crawl_sitemap"
+            android:textColor="@color/text_primary" />
+
+        <CheckBox
+            android:id="@+id/checkCrawlRobots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_crawl_robots"
+            android:textColor="@color/text_primary" />
+
+        <CheckBox
+            android:id="@+id/checkDisableRedirect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_disable_redirect"
+            android:textColor="@color/text_primary" />
+
+        <CheckBox
+            android:id="@+id/checkLocalLabMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_local_lab_mode"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_threads"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editThreads"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_timeout_seconds"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editTimeoutSeconds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_crawl_depth"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editCrawlDepth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_user_agent"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editUserAgent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_blacklist_regex"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editBlacklistRegex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_whitelist_regex"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editWhitelistRegex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_whitelist_domain"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editWhitelistDomain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_cookie"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editCookie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_custom_headers"
+            android:textColor="@color/text_secondary" />
+        <EditText
+            android:id="@+id/editCustomHeaders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="3"
+            android:gravity="top"
+            android:textColor="@color/text_primary" />
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/action_save" />
+
+    </LinearLayout>
+</ScrollView>

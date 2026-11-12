@@ -1,0 +1,53 @@
+# TODO(verify-version): every version below must be checked against the latest stable
+# release on Google Maven / Maven Central / Gradle Plugin Portal before the first build.
+# No alpha/beta/rc artifacts are used.
+
+[versions]
+agp = "8.5.2"                  # TODO(verify-version)
+kotlin = "2.0.20"              # TODO(verify-version)
+ksp = "2.0.20-1.0.25"          # TODO(verify-version): must match the Kotlin version exactly
+hilt = "2.51.1"                # TODO(verify-version)
+coroutines = "1.8.1"           # TODO(verify-version)
+lifecycle = "2.8.4"            # TODO(verify-version)
+room = "2.6.1"                 # TODO(verify-version)
+datastore = "1.1.1"            # TODO(verify-version)
+okhttp = "4.12.0"              # TODO(verify-version)
+jsoup = "1.17.2"               # TODO(verify-version)
+recyclerview = "1.3.2"         # TODO(verify-version)
+webkit = "1.11.0"              # TODO(verify-version)
+# TODO: needs confirmation — the three "ui-essentials" entries below
+# (appcompat, activity-ktx, lifecycle-runtime-ktx) are NOT in §0.4's
+# original mandatory dependency list. They were added because the UI code
+# in ui/main and ui/settings cannot compile without them:
+# AppCompatActivity/AlertDialog (appcompat), the `by viewModels()` delegate
+# (activity-ktx), and lifecycleScope/repeatOnLifecycle (lifecycle-runtime-
+# ktx) have no equivalent among the originally-listed libraries. Flagged
+# here as a deviation from the closed §0.4 list, kept to the minimum needed
+# to build, rather than silently omitted (which would make the project
+# simply not compile).
+appcompat = "1.7.0"            # TODO(verify-version)
+activity-ktx = "1.9.1"         # TODO(verify-version)
+
+[libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

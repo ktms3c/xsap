@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">XSS Scanner</string>
+
+    <string name="hint_target_url">https://target.example.com</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_start_scan">Start Scan</string>
+    <string name="action_stop_scan">Stop</string>
+    <string name="action_export_crawl">Export Crawl</string>
+    <string name="action_export_analysis">Export Analysis</string>
+    <string name="action_save">Save</string>
+    <string name="label_findings">Findings</string>
+    <string name="label_logs">Logs</string>
+    <string name="settings_saved">Settings saved</string>
+
+    <!-- §9 mandatory safety/legal gate copy. Must be shown before EVERY
+         scan start; wording is explicit about authorization, per §9. -->
+    <string name="safety_gate_title">Authorization required</string>
+    <string name="safety_gate_message">This tool actively sends test payloads to the target and may trigger security alerts. Only use it against systems you own or are explicitly authorized to test. Unauthorized testing may be illegal.\n\nI confirm that I have authorization to test this target.</string>
+    <string name="safety_gate_confirm">I have authorization — Start</string>
+    <string name="safety_gate_cancel">Cancel</string>
+
+    <string name="setting_enable_js_link_finder">Enable JS Link Finder</string>
+    <string name="setting_crawl_sitemap">Crawl sitemap.xml</string>
+    <string name="setting_crawl_robots">Crawl robots.txt</string>
+    <string name="setting_disable_redirect">Disable redirect following</string>
+    <string name="setting_local_lab_mode">Local lab mode (allow private/local IPs)</string>
+    <string name="setting_threads">Threads (1-16)</string>
+    <string name="setting_timeout_seconds">Timeout (seconds)</string>
+    <string name="setting_crawl_depth">Crawl depth</string>
+    <string name="setting_user_agent">User-Agent ("random" for rotation)</string>
+    <string name="setting_blacklist_regex">Blacklist URL regex</string>
+    <string name="setting_whitelist_regex">Whitelist URL regex</string>
+    <string name="setting_whitelist_domain">Whitelist domain (required)</string>
+    <string name="setting_cookie">Cookie header</string>
+    <string name="setting_custom_headers">Custom headers ("Header: value" per line)</string>
+</resources>

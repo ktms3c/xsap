@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TODO: needs confirmation — originally a plain platform theme since
+         §0.4 doesn't list AppCompat. Switched to Theme.AppCompat.NoActionBar
+         because MainActivity/SettingsActivity were written as
+         AppCompatActivity (required for AlertDialog/viewModels() delegate
+         support — see libs.versions.toml's appcompat TODO). An
+         AppCompatActivity with a non-AppCompat theme throws
+         InflateException at runtime, so this is a hard requirement, not a
+         style preference. -->
+    <style name="Theme.XssScanner" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/surface_background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:statusBarColor">@color/surface_background</item>
+        <item name="android:navigationBarColor">@color/surface_background</item>
+    </style>
+</resources>

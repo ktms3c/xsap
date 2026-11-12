@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base surfaces -->
+    <color name="surface_background">#FF121212</color>
+    <color name="text_primary">#FFEDEDED</color>
+    <color name="text_secondary">#FFB0B0B0</color>
+
+    <!-- §5 log colors: the ONLY place these values are declared.
+         They are read by ui/common/LogColorMapper.kt, nowhere else. -->
+    <color name="log_info">#FF81D4FA</color>
+    <color name="log_success">#FF66BB6A</color>
+    <color name="log_warning">#FFFFB300</color>
+    <color name="log_error">#FFE53935</color>
+    <color name="log_http_2xx">#FF66BB6A</color>
+    <color name="log_http_3xx">#FFFDD835</color>
+    <color name="log_http_4xx">#FFFB8C00</color>
+    <color name="log_http_5xx">#FFE53935</color>
+    <color name="log_param_found">#FF00E5FF</color>
+    <color name="log_payload_sent">#FFAB47BC</color>
+    <color name="log_reflected">#FFFF6D00</color>
+    <color name="log_possible">#FFFFFF00</color>
+    <color name="log_confirmed_execution">#FFFF1744</color>
+    <color name="log_blocked">#FF9E9E9E</color>
+</resources>

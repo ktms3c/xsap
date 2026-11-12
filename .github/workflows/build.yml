@@ -1,0 +1,74 @@
+name: Build XSS Scanner APK
+
+# Audited manually (no Android SDK, Gradle, or network available in the
+# authoring environment): this workflow is the actual compile/lint check
+# for the project. A failed run here is the first real signal of any
+# remaining error, since static source review can only catch so much
+# without actually invoking kotlinc/AGP/KSP/Hilt's annotation processor.
+#
+# NOTE: this project does not commit a Gradle Wrapper (gradlew /
+# gradle-wrapper.jar). Generating a correct gradle-wrapper.jar requires
+# either a working Gradle install or network access to download one,
+# neither of which was available while this project was authored, and a
+# hand-written/fabricated wrapper jar would be worse than none (a silent,
+# hard-to-diagnose corruption risk). Instead, this workflow installs Gradle
+# directly via the official gradle/actions/setup-gradle action and invokes
+# `gradle` (not `./gradlew`). If you want a committed wrapper for local
+# builds, run `gradle wrapper --gradle-version <version>` once locally (or
+# in this same CI, as a one-off job) and commit the result — after that,
+# this workflow can be switched back to `./gradlew`.
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # TODO(verify-version): pin to a current stable Gradle release
+      # compatible with the AGP version in gradle/libs.versions.toml (AGP
+      # 8.5.x expects Gradle 8.7+). Verify against the AGP compatibility
+      # table before relying on this in a real pipeline.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Lint (non-blocking — surfaces warnings without failing the build)
+        run: gradle lint --stacktrace
+        continue-on-error: true
+
+      - name: Build debug APK
+        run: gradle assembleDebug --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: xss-scanner-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore

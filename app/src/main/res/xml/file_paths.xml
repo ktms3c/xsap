@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    TODO: needs confirmation — listed in §1's file structure but currently
+    UNUSED: §3.2 calls for SAF (ACTION_CREATE_DOCUMENT) as the primary
+    export approach, and ExportRepository (data/repository) writes via
+    MediaStore.Downloads / the app's own external-files dir, neither of
+    which needs a FileProvider. Kept as an empty, valid, harmless resource
+    (not referenced by any <provider> in the manifest) so the file listed
+    in §1 exists, in case a future "share exported file" Intent needs
+    FileProvider-backed content:// Uris for files under cacheDir.
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="exports" path="exports/" />
+</paths>
