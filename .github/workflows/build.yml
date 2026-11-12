@@ -1,101 +1,133 @@
-name: Build XSS Scanner APK
-
-# Audited manually (no Android SDK, Gradle, or network available in the
-# authoring environment): this workflow is the actual compile/lint check
-# for the project. A failed run here is the first real signal of any
-# remaining error, since static source review can only catch so much
-# without actually invoking kotlinc/AGP/KSP/Hilt's annotation processor.
-#
-# NOTE: this project does not commit a Gradle Wrapper (gradlew /
-# gradle-wrapper.jar). Generating a correct gradle-wrapper.jar requires
-# either a working Gradle install or network access to download one,
-# neither of which was available while this project was authored, and a
-# hand-written/fabricated wrapper jar would be worse than none (a silent,
-# hard-to-diagnose corruption risk). Instead, this workflow installs Gradle
-# directly via the official gradle/actions/setup-gradle action and invokes
-# `gradle` (not `./gradlew`). If you want a committed wrapper for local
-# builds, run `gradle wrapper --gradle-version <version>` once locally (or
-# in this same CI, as a one-off job) and commit the result — after that,
-# this workflow can be switched back to `./gradlew`.
+name: build xsap
+permissions:
+  contents: read
 
 on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      build_type:
+        type: choice
+        description: "Build type"
+        required: true
+        default: debug
+        options:
+          - debug
+          - nightly
+          - release
+      flavor:
+        type: choice
+        description: "Product flavor"
+        required: true
+        default: fdroid
+        options:
+          - fdroid
+          - standalone
+    secrets:
+      SIGNING_KEY_ALIAS:
+        required: false
+      SIGNING_KEY_PASSWORD:
+        required: false
+      SIGNING_STORE_PASSWORD:
+        required: false
+      SERVICE_ACCOUNT_JSON:
+        required: false
+      KEYSTORE:
+        required: false
+  workflow_call:
+    inputs:
+      build_type:
+        type: string
+        description: "Build type"
+        required: true
+        default: debug
+      flavor:
+        type: string
+        description: "Product flavor"
+        required: false
+        default: fdroid
+    secrets:
+      SIGNING_KEY_ALIAS:
+        required: false
+      SIGNING_KEY_PASSWORD:
+        required: false
+      SIGNING_STORE_PASSWORD:
+        required: false
+      SERVICE_ACCOUNT_JSON:
+        required: false
+      KEYSTORE:
+        required: false
+
+env:
+  UPLOAD_DIR_ANDROID: android_artifacts
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      KEY_STORE_FILE: 'android_keystore.jks'
+      KEY_STORE_LOCATION: ${{ github.workspace }}/app/keystore/
+    outputs:
+      UPLOAD_DIR_ANDROID: ${{ env.UPLOAD_DIR_ANDROID }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
         with:
-          distribution: temurin
-          java-version: "17"
-
-      # TODO: needs confirmation — android-actions/setup-android@v3's
-      # default behavior tries to install the legacy 'tools' SDK package,
-      # which Google removed from its repository years ago; sdkmanager then
-      # exits 1 and the whole job fails before anything Gradle-related even
-      # runs. GitHub's ubuntu-latest runner image already ships a recent
-      # Android SDK (cmdline-tools, platform-tools, several platforms and
-      # build-tools versions preinstalled, ANDROID_HOME/ANDROID_SDK_ROOT
-      # already set), so the fix is to drop that action entirely and only
-      # ask sdkmanager for the exact extra packages this project needs,
-      # skipping the broken legacy 'tools' meta-package.
-      - name: Ensure required SDK packages are installed
+          fetch-depth: 0
+          submodules: recursive
+      - name: Read JDK version
+        id: jdk
         run: |
-          set -e
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          # TODO(verify-version): the cmdline-tools version folder name
-          # (e.g. "16.0") is not guaranteed stable across runner image
-          # updates — found via `which`/PATH first, with a glob fallback,
-          # rather than a hardcoded "latest" or version number.
-          if command -v sdkmanager >/dev/null 2>&1; then
-            SDKMANAGER="$(command -v sdkmanager)"
-          else
-            SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 2 -name sdkmanager -type f | sort -V | tail -n1)"
-          fi
-          echo "Using sdkmanager at: $SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" \
-            "platform-tools" \
-            "platforms;android-34" \
-            "build-tools;34.0.0"
-
-      # TODO(verify-version): pin to a current stable Gradle release
-      # compatible with the AGP version in gradle/libs.versions.toml (AGP
-      # 8.5.x expects Gradle 8.7+). Verify against the AGP compatibility
-      # table before relying on this in a real pipeline.
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+          JDK_VERSION=$(sed -nE 's/^jdk[[:space:]]*=[[:space:]]*"([0-9]+)".*/\1/p' gradle/libs.versions.toml)
+          echo "version=$JDK_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Set up JDK
+        uses: actions/setup-java@v6
         with:
-          gradle-version: "8.9"
-
-      - name: Lint (non-blocking — surfaces warnings without failing the build)
-        run: gradle lint --stacktrace
-        continue-on-error: true
-
-      - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+          distribution: 'temurin'
+          java-version: ${{ steps.jdk.outputs.version }}
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v2.0
         with:
-          name: xss-scanner-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          fileName: ${{ env.KEY_STORE_FILE }}
+          fileDir: ${{ env.KEY_STORE_LOCATION }}
+          encodedString: ${{ secrets.KEYSTORE }}
+      - name: Create keystore path env var
+        if: ${{ inputs.build_type != 'debug' }}
+        run: |
+          store_path=${{ env.KEY_STORE_LOCATION }}${{ env.KEY_STORE_FILE }}
+          echo "KEY_STORE_PATH=$store_path" >> $GITHUB_ENV
 
-      - name: Upload lint report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Build APK
+        run: |
+          flavor=${{ inputs.flavor }}
+          build_type=${{ inputs.build_type }}
+          case $build_type in
+            "release")
+              ./gradlew :app:assemble${flavor^}Release --info
+              ;;
+            "nightly")
+              ./gradlew :app:assemble${flavor^}Nightly --info
+              ;;
+            "debug")
+              ./gradlew :app:assemble${flavor^}Debug --stacktrace
+              ;;
+          esac
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+      - name: Get release apk path
+        id: apk-path
+        run: echo "path=$(find . -regex '^.*/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/.*\.apk$' -type f | head -1 | tail -c+2)" >> $GITHUB_OUTPUT
+      - name: Upload All APK Artifacts
+        uses: actions/upload-artifact@v7
         with:
-          name: lint-report
-          path: app/build/reports/lint-results-debug.html
-          if-no-files-found: ignore
+          name: android_artifacts_${{ inputs.flavor }}
+          path: >-
+            app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/*.apk
+          retention-days: 1
+          if-no-files-found: warn
